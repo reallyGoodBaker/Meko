@@ -1,5 +1,6 @@
 //简单的 paths 映射
 //缺陷：paths 中每个数组只能存放一个路径
+//特殊：通过/**@map*/标记需要映射的字符串
 
 import * as fs from 'fs'
 import * as path from 'path'
@@ -69,22 +70,23 @@ async function main() {
             virt = virt.slice(0, -1)
             real = real.slice(0, -1)
         }
-
         virtRealMap.set(virt, real)
     }
 
+
     const rewriteRequires = (rawScript: string, scriptDir: string) => {
-        return rawScript.replace(/require\("(.*?)"\)/g, (_, requirePath: string) => {   
+        const replacer = (_: string, requirePath: string) => {
             for (const virt of virtRealMap.keys()) {
+
                 if (!requirePath.startsWith(virt))
-                    return _
+                    continue
 
                 const relativeRealPath = virtRealMap.get(virt) as string,
                     scriptToRoot = path.relative(scriptDir, MAP_ENTRY),
                     rootToRequire = requirePath.replace(virt, relativeRealPath),
                     trueRequirePath = pathJoin(scriptToRoot, rootToRequire)
 
-                return _.replace(
+                _ = _.replace(
                     requirePath,
                     trueRequirePath.startsWith('.')
                         ? trueRequirePath
@@ -93,7 +95,11 @@ async function main() {
             }
 
             return _
-        })
+        }
+        return rawScript.replace(/require\("(.*?)"\)/g, replacer)
+            .replace(/\/\*\*@map\*\/[\s]*'(.*?)'/g, replacer)
+            .replace(/\/\*\*@map\*\/[\s]*"(.*?)"/g, replacer)
+            .replace(/\/\*\*@map\*\/[\s]*`(.*?)`/g, replacer)
     }
 
     fileForeach(MAP_ENTRY, rewriteRequires)
