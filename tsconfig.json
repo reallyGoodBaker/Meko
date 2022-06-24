@@ -33,7 +33,7 @@
         "@src/*": ["./src/*"],
         "@persistence/*": ["./src/persistence/*"],
         "@loader/*": ["./src/loader/*"],
-        "@runtime/*": ["./src/loader/runtime/*"],
+        "@runtime/*": ["src/loader/pluginLoader/runtime/*"],
         "@plugins/*": ["./src/plugins/*"]
     },                                      /* Specify a set of entries that re-map imports to additional lookup locations. */
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */

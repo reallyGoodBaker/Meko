@@ -37,7 +37,10 @@ class Config {
         this._configPath = p
     }
 
-    val() {
+    val(key?: string) {
+        if (typeof key === 'string') {
+            return this._data[key]
+        }
         return Object.assign({}, this._data)
     }
 

@@ -1,4 +1,4 @@
-import * as Meko from '@runtime/index'
+import * as Meko from '@src/loader/runtime/index'
 
 Meko.register('sayhi')
 .then(success => {
@@ -10,3 +10,9 @@ Meko.register('sayhi')
 function init() {
     console.log('\nPlugin is running!');
 }
+
+Meko.provide({
+    sayHi() {
+        console.log('Yes, you say hi!');
+    }
+})
