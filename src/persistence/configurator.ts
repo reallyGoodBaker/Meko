@@ -65,6 +65,11 @@ class Config {
         this._writeConfigWhenFree()
     }
 
+    override(obj: any) {
+        this._data = obj
+        this._writeConfigWhenFree()
+    }
+
     private _writeConfigWhenFree() {
         requestIdleCallback(() => {
             this._fs.writeFile(this._configPath, this._data)

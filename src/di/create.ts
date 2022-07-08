@@ -29,6 +29,18 @@ export class InstantiationService implements IInstantiationService {
     }
 
 
+    getCollection() {
+        return new Proxy(this._collection, {
+            set() {
+                return false
+            },
+
+            get(t, p: keyof ServiceCollection) {
+                return t[p]
+            }
+        })
+    }
+
     private _getOrCreateServiceByKey(key: string, args: any[] = []) {
         if (_store.has(key)) {
             return _store.get(key)

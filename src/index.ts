@@ -2,12 +2,12 @@ import {InstantiationService, ServiceCollection} from '@di'
 import {IConfigurator, Configurator} from '@persistence/configurator'
 import {IFileSystem, FileSystem} from '@persistence/fileSystem'
 
-const col = new ServiceCollection([
-    [IConfigurator, Configurator],
-    [IFileSystem, FileSystem],
-])
-
-const service = new InstantiationService(col)
+const service = new InstantiationService(
+    new ServiceCollection([
+        [IConfigurator, Configurator],
+        [IFileSystem, FileSystem],
+    ])
+)
 
 class App {
     constructor(
