@@ -1,12 +1,22 @@
 import * as fs from 'fs'
 import { promisify } from 'util'
+import {createIdentifier} from '@di'
 
 type Convertable = boolean | null | number | string | object
 
 const _writeFile = promisify(fs.writeFile)
 const _readFile = promisify(fs.readFile)
 
-class FileSystem {
+export interface IFileSystem {
+    mkdir(path: string, options?: any): Promise<any>;
+    exists(filename: string): boolean;
+    writeFile(filename: string, data: Convertable): Promise<void>;
+    readFile(filename: string, removeComments?: boolean): Promise<any>
+}
+
+export const IFileSystem = createIdentifier<IFileSystem>('builtin-fs')
+
+export class FileSystem implements IFileSystem {
 
     
     mkdir = promisify(fs.mkdir)
@@ -33,5 +43,3 @@ class FileSystem {
     }
 
 }
-
-export const fileSystem = new FileSystem()

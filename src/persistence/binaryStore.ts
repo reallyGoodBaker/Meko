@@ -11,7 +11,7 @@ export interface ISave {
     string(key: string): string;
 }
 
-export const ISave = createIdentifier<ISave>('binStore')
+export const ISave = createIdentifier<ISave>('builtin-BinaryStore')
 
 export class Save implements ISave {
     private _accessor: Array<string | number> = []

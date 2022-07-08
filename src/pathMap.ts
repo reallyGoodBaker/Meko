@@ -7,9 +7,9 @@ import * as path from 'path'
 
 //此文件默认路径"/out/persistence/pathMap.js"
 //映射时从相对于此文件的这个位置开始遍历文件
-const MAP_ENTRY = path.resolve(__dirname, '../')
+const MAP_ENTRY = path.resolve(__dirname, './')
 //tsconfig 文件相对于此文件打包后的位置
-const TSCONFIG_PATH = path.resolve(__dirname, '../../tsconfig.json')
+const TSCONFIG_PATH = path.resolve(__dirname, '../tsconfig.json')
 //具有数组内后缀名的文件才会被处理
 const matchedSuffix = [
     '.js', '.mjs'
@@ -28,7 +28,6 @@ function matchSuffix(target: string, matchArr: string[]) {
 
     return false
 }
-
 
 const tsConfig = JSON.parse(
     fs.readFileSync(TSCONFIG_PATH)

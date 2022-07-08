@@ -32,8 +32,17 @@ export function storeDependency(target: any, index: number, key: string) {
 export class ServiceCollection {
     private _entries = new Map<string, any>()
 
+    constructor(opt?: [Identifier<any>, any][]) {
+        if (Array.isArray(opt)) {
+            for (const [id, ctor] of opt) {
+                this.set(id, ctor)
+            }
+        }
+    }
+
     set(id: Identifier<any>, service: any) {
         this._entries.set(id._key, service)
+        return this
     }
 
     get(id: any) {

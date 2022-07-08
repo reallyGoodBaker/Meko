@@ -1,26 +1,26 @@
 import {InstantiationService, ServiceCollection} from '@di'
-import {ISave, Save} from '@persistence/binaryStore'
+import {IConfigurator, Configurator} from '@persistence/configurator'
+import {IFileSystem, FileSystem} from '@persistence/fileSystem'
 
-const col = new ServiceCollection()
+const col = new ServiceCollection([
+    [IConfigurator, Configurator],
+    [IFileSystem, FileSystem],
+])
+
 const service = new InstantiationService(col)
 
-class Test {
-    constructor(
-        @ISave private save: ISave
-    ) {
-        console.log(save);  
-    }
-}
-
 class App {
-    constructor() {
-        col.set(ISave, Save)
-        const test = service.createInstance<Test>(Test)
-    }
+    constructor(
+        @IConfigurator private readonly configurator: IConfigurator
+    ) {}
 
-    startApp() {
+    async startApp() {
+        const [config] = await Promise.all([
+            this.configurator.open('botConfig.json')
+        ])
 
+        console.log(config.val());
     }
 }
 
-new App().startApp()
+service.createInstance<App>(App).startApp()
