@@ -1,6 +1,19 @@
 import * as fs from 'fs'
+import {createIdentifier} from '@di'
 
-export class Save {
+export interface ISave {
+    add(key: string, val: Uint8Array): this;
+    get(key: string): Uint8Array | null;
+    access(index: number): (string | number | Uint8Array)[] | (number | null)[];
+    delete(key: string): this;
+    writeBinary(filename: string): void;
+    parse(key: string, decorator: (buf: Uint8Array) => any): any;
+    string(key: string): string;
+}
+
+export const ISave = createIdentifier<ISave>('binStore')
+
+export class Save implements ISave {
     private _accessor: Array<string | number> = []
     private _data: Uint8Array[] = []
 
@@ -119,3 +132,4 @@ export class Save {
     }
 
 }
+

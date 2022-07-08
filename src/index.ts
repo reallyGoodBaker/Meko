@@ -1,16 +1,26 @@
-import {configurator} from '@src/persistence/configurator'
-import {pluginLoader} from '@src/loader/loader'
-import * as path from 'path';
+import {InstantiationService, ServiceCollection} from '@di'
+import {ISave, Save} from '@persistence/binaryStore'
 
-(async() => {
-    const data = await configurator.open('botConfig.json')
-    console.log(data?.val('account'));
-    pluginLoader.setupPlugin(path.resolve(
-        __dirname,
-        /**@map*/'@plugins/sayhi/index'
-    ), {})
-    pluginLoader.setupPlugin(path.resolve(
-        __dirname,
-        /**@map*/'@plugins/hello/index'
-    ), {})
-})()
+const col = new ServiceCollection()
+const service = new InstantiationService(col)
+
+class Test {
+    constructor(
+        @ISave private save: ISave
+    ) {
+        console.log(save);  
+    }
+}
+
+class App {
+    constructor() {
+        col.set(ISave, Save)
+        const test = service.createInstance<Test>(Test)
+    }
+
+    startApp() {
+
+    }
+}
+
+new App().startApp()

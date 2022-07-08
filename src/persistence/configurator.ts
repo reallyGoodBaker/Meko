@@ -3,18 +3,21 @@ import * as path from 'path'
 
 const CONFIG_PATH = path.resolve(__dirname, '../../config')
 
-class Configurator {
-    constructor() {
+export class Configurator {
+    private _configPath: string
+
+    constructor(configPath=CONFIG_PATH) {
+        this._configPath = configPath
         this._init()
     }
 
     private async _init() {
-        if (!fileSystem.exists(CONFIG_PATH))
-            fileSystem.mkdir(CONFIG_PATH)
+        if (!fileSystem.exists(this._configPath))
+            fileSystem.mkdir(this._configPath)
     }
  
     async open(configName: string, removeComments=true) {
-        const _filePath = path.join(CONFIG_PATH, configName)
+        const _filePath = path.join(this._configPath, configName)
         let data
 
         if (fileSystem.exists(_filePath)) {
