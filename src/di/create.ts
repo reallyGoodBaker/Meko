@@ -1,6 +1,7 @@
 import { ServiceCollection, _identifiers } from '@di/store'
 import { _deps, valideDependencies } from '@di/dependency'
 import { createIdentifier } from '@di/identifier'
+import { Identifier } from '@di/types'
 
 function _gatherDeps(service: any) {
     const dep = _deps.get(service)
@@ -104,5 +105,16 @@ export class InstantiationService implements IInstantiationService {
 
     onError(err: any) {
         console.log(err)
+    }
+
+
+    register(id: Identifier<any>, service: any, args: any[] = []) {
+        this._collection.set(id, service, args)
+        return this
+    }
+
+    registerSingleton(id: Identifier<any>, service: any, args: any[] = []) {
+        this._collection.setSingleton(id, service, args)
+        return this
     }
 }

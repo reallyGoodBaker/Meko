@@ -1,13 +1,14 @@
 import {InstantiationService, ServiceCollection} from '@di'
-import {IConfigurator, Configurator} from '@persistence/configurator'
+import {IConfigurator, MekoConfigurator} from '@persistence/configurator'
 import {IFileSystem, FileSystem} from '@persistence/fileSystem'
 
 const instantiationService = new InstantiationService(
     new ServiceCollection([
-        [IConfigurator, Configurator],
+        [IConfigurator, MekoConfigurator],
         [IFileSystem, FileSystem],
     ])
 )
+
 
 class App {
     constructor(
@@ -16,10 +17,13 @@ class App {
 
     async startApp() {
         const [config] = await Promise.all([
-            this.configurator.open('botConfig.json'),
+            this.configurator.open('meko.config'),
         ])
 
         console.log(config.val());
+        config.set({
+            debugPort: 5039,
+        })
     }
 }
 

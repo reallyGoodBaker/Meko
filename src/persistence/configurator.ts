@@ -12,13 +12,10 @@ export const IConfigurator = createIdentifier<IConfigurator>('builtin-Configurat
 
 export class Configurator implements IConfigurator {
 
-    private _configPath: string
-
     constructor(
         @IFileSystem private readonly fileSystem: IFileSystem,
-        configPath: string = CONFIG_PATH,
+        private readonly _configPath: string,
     ) { 
-        this._configPath = configPath
         this._init()
     }
 
@@ -65,14 +62,25 @@ class Config {
         this._writeConfigWhenFree()
     }
 
+    set(obj: any) {
+        this._data = obj
+        this._writeConfigWhenFree()
+    }
+
     override(obj: any) {
         this._data = obj
         this._writeConfigWhenFree()
     }
 
     private _writeConfigWhenFree() {
-        requestIdleCallback(() => {
-            this._fs.writeFile(this._configPath, this._data)
-        })
+        this._fs.writeFile(this._configPath, this._data)
+    }
+}
+
+export class MekoConfigurator extends Configurator {
+    constructor(
+        @IFileSystem private readonly fs: IFileSystem,
+    ) {
+        super(fs, CONFIG_PATH)
     }
 }
