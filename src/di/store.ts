@@ -1,55 +1,54 @@
-import type {Identifier, SyncDescriptor} from '@di/types'
+import type { Identifier, Descriptor, ServiceCollectionOpt } from '@di/types'
 
-class Dependency {
-    private _deps: any[] = []
-
-    set(index: number, serviceKey: string) {
-        this._deps[index] = serviceKey
+function createDescriptor<T>(service: any, singleton: boolean = true, staticArgs: any[] = []): Descriptor<T> {
+    const desc = {
+        ctor: service,
+        singleton,
+        staticArguments: staticArgs
     }
 
-    get() {
-        return this._deps
-    }
+    return desc
 }
 
-export const _deps = new Map<any, Dependency>()
 export const _identifiers = new Map<string, Identifier<any>>()
 
-export function storeDependency(target: any, index: number, key: string) {
-    let dep = null
-
-    if (_deps.has(target)) {
-        dep = _deps.get(target)
-    } else {
-        dep = new Dependency()
-    }
-
-    dep?.set(index, key)
-
-    _deps.set(target, dep!)
-}
-
 export class ServiceCollection {
-    private _entries = new Map<string, any>()
+    private _entries = new Map<string, Descriptor<any>>()
 
-    constructor(opt?: [Identifier<any>, any][]) {
-        if (Array.isArray(opt)) {
-            for (const [id, ctor] of opt) {
-                this.set(id, ctor)
+    constructor(singletonOpt?: ServiceCollectionOpt, basicOpt?: ServiceCollectionOpt) {
+        if (Array.isArray(singletonOpt)) {
+            for (const _opt of singletonOpt) {
+                const [id, ctor, args] = _opt
+                this.setSingleton(id, ctor, args)
+            }
+        }
+
+        if (Array.isArray(basicOpt)) {
+            for (const _opt of basicOpt) {
+                const [id, ctor, args] = _opt
+                this.set(id, ctor, args)
             }
         }
     }
 
-    set(id: Identifier<any>, service: any) {
-        this._entries.set(id._key, service)
+    setSingleton(id: Identifier<any> | string, service: any, args: any[] = []) {
+        this._entries.set(
+            typeof id === 'string' ? id : id._key,
+            createDescriptor(service, true, args)
+        )
         return this
     }
 
-    get(id: any) {
-        return this._entries.get(id)
+    set(id: Identifier<any> | string, service: any, args: any[] = []) {
+        this._entries.set(typeof id === 'string' ? id : id._key, createDescriptor(service, false, args))
+        return this
     }
 
-    has(id: any) {
-        return this._entries.has(id)
+    get(id: Identifier<any> | string) {
+        return this._entries.get(typeof id === 'string' ? id : id._key)
+    }
+
+    has(id: Identifier<any> | string) {
+        return this._entries.has(typeof id === 'string' ? id : id._key)
     }
 }

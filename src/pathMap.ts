@@ -5,7 +5,7 @@
 import * as fs from 'fs'
 import * as path from 'path'
 
-//此文件默认路径"/out/persistence/pathMap.js"
+//此文件默认路径"/out/pathMap.js"
 //映射时从相对于此文件的这个位置开始遍历文件
 const MAP_ENTRY = path.resolve(__dirname, './')
 //tsconfig 文件相对于此文件打包后的位置

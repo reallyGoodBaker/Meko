@@ -3,6 +3,10 @@ export interface Identifier<T> {
     (target: any, key: string, index: number): void;
 }
 
-export interface SyncDescriptor<T> {
-    (...args: any[]): T
+export interface Descriptor<T> {
+    readonly ctor: new(...args: any[]) => T;
+    readonly staticArguments: any[];
+    readonly singleton: boolean;
 }
+
+export type ServiceCollectionOpt = [Identifier<any>, any, any[]?][]

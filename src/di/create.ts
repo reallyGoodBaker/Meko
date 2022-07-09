@@ -1,6 +1,6 @@
-import {_deps, ServiceCollection, _identifiers} from '@di/store'
-import {Identifier} from '@di/types'
-import {createIdentifier} from '@di/identifier'
+import { ServiceCollection, _identifiers } from '@di/store'
+import { _deps, valideDependencies } from '@di/dependency'
+import { createIdentifier } from '@di/identifier'
 
 function _gatherDeps(service: any) {
     const dep = _deps.get(service)
@@ -16,7 +16,8 @@ const _store = new Map<string, any>()
 
 interface IInstantiationService {
     createInstance<T>(service: any, args?: any[]): T;
-    invoke(func: (accessor: {get(key: string, args?: any[]): any}) => void): void;
+    invoke(func: (accessor: { get(key: string, args?: any[]): any }) => void): void;
+    getCollection(): ServiceCollection;
 }
 
 export const IInstantiationService = createIdentifier<IInstantiationService>('builtin-InstantiationService')
@@ -27,7 +28,6 @@ export class InstantiationService implements IInstantiationService {
     constructor(collection: ServiceCollection) {
         this._collection = collection
     }
-
 
     getCollection() {
         return new Proxy(this._collection, {
@@ -42,26 +42,42 @@ export class InstantiationService implements IInstantiationService {
     }
 
     private _getOrCreateServiceByKey(key: string, args: any[] = []) {
-        if (_store.has(key)) {
+        if (!this._collection.has(key)) {
+            return null
+        }
+
+        const desc = this._collection.get(key)
+
+        if (!desc) {
+            return null
+        }
+
+        const { ctor, singleton, staticArguments } = desc
+
+        if (singleton && _store.has(key)) {
             return _store.get(key)
         }
 
-        if (!this._collection.has(key)) {
-            return undefined
+        const _service = this._createInstance(
+            ctor, args.length ? args : staticArguments
+        )
+
+        if (singleton) {
+            _store.set(key, _service)
         }
-
-        const ctor = this._collection.get(key)
-
-        const _service = this._createInstance(ctor, args)
-
-        _store.set(key, _service)
 
         return _service
     }
 
 
-    private _createInstance<T>(service: any, args: any[] = []): T {
-        let deps = _gatherDeps(service)?.get().map(key => this._getOrCreateServiceByKey(key))!
+    protected _createInstance<T>(service: any, args: any[] = []): T | null {
+        try {
+            valideDependencies(service, this._collection)
+        } catch (err) {
+            this.onError.call(this, err)
+        }
+
+        let deps = _gatherDeps(service)?.get().map(key => this._getOrCreateServiceByKey(key))
 
         if (!deps) {
             deps = []
@@ -72,11 +88,11 @@ export class InstantiationService implements IInstantiationService {
 
 
     createInstance<T>(service: any, args: any[] = []): T {
-        return this._createInstance(service, args)
+        return this._createInstance(service, args)!
     }
 
 
-    invoke(func: (accessor: {get(key: string, args?: any[]): any}) => void) {
+    invoke(func: (accessor: { get(key: string, args?: any[]): any }) => void) {
         const self = this
 
         Reflect.apply(func, undefined, [{
@@ -84,5 +100,9 @@ export class InstantiationService implements IInstantiationService {
                 return self._getOrCreateServiceByKey(k, args)
             }
         }])
+    }
+
+    onError(err: any) {
+        console.log(err)
     }
 }

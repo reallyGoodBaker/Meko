@@ -2,7 +2,7 @@ import {InstantiationService, ServiceCollection} from '@di'
 import {IConfigurator, Configurator} from '@persistence/configurator'
 import {IFileSystem, FileSystem} from '@persistence/fileSystem'
 
-const service = new InstantiationService(
+const instantiationService = new InstantiationService(
     new ServiceCollection([
         [IConfigurator, Configurator],
         [IFileSystem, FileSystem],
@@ -11,16 +11,16 @@ const service = new InstantiationService(
 
 class App {
     constructor(
-        @IConfigurator private readonly configurator: IConfigurator
+        @IConfigurator private readonly configurator: IConfigurator,
     ) {}
 
     async startApp() {
         const [config] = await Promise.all([
-            this.configurator.open('botConfig.json')
+            this.configurator.open('botConfig.json'),
         ])
 
         console.log(config.val());
     }
 }
 
-service.createInstance<App>(App).startApp()
+instantiationService.createInstance<App>(App).startApp()
