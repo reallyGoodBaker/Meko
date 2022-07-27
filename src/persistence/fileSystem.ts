@@ -1,6 +1,6 @@
 import * as fs from 'fs'
 import { promisify } from 'util'
-import {createIdentifier} from '@di'
+import { createIdentifier } from '@di'
 
 type Convertable = boolean | null | number | string | object
 
@@ -22,7 +22,7 @@ export const IFileSystem = createIdentifier<IFileSystem>('builtin-fs')
 
 export class FileSystem implements IFileSystem {
 
-    
+
     mkdir = _mkdir
     appendFile = _appendFile
     watch = fs.watch
@@ -37,12 +37,12 @@ export class FileSystem implements IFileSystem {
         await _writeFile(filePath, str)
     }
 
-    async readFile(filePath: string, removeComments=true) {
+    async readFile(filePath: string, removeComments = true) {
         let str = (await _readFile(filePath)).toString()
-        
+
         if (removeComments) {
             str = str.replace(/\/\/.*[\n\r]/g, '')
-                     .replace(/[\s]\/\*[\s|\S]*?\*\//g, '')
+                .replace(/[\s]\/\*[\s|\S]*?\*\//g, '')
         }
 
         return JSON.parse(str)

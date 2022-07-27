@@ -15,7 +15,7 @@ function _gatherDeps(service: any) {
 
 const _store = new Map<string, any>()
 
-interface IInstantiationService {
+interface IInstantiationService {                 
     createInstance<T>(service: any, args?: any[]): T;
     invoke(func: (accessor: { get(key: string, args?: any[]): any }) => void): void;
     getCollection(): ServiceCollection;
@@ -93,7 +93,7 @@ export class InstantiationService implements IInstantiationService {
     }
 
 
-    invoke(func: (accessor: { get(key: string, args?: any[]): any }) => void) {
+    invoke(func: (accessor: { get<T>(key: string, args?: any[]): T }) => void) {
         const self = this
 
         Reflect.apply(func, undefined, [{
@@ -103,8 +103,11 @@ export class InstantiationService implements IInstantiationService {
         }])
     }
 
+    /**
+     * @override
+     */
     onError(err: any) {
-        console.log(err)
+        console.error(err)
     }
 
 

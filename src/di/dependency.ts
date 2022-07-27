@@ -26,8 +26,12 @@ export function storeDependency(target: any, index: number, key: string) {
     _deps.set(target, dep!)
 }
 
-export function valideDependencies(target: any, col: ServiceCollection, exists: any[] = []) {
+export function valideDependencies(target: any, col: ServiceCollection, exists: any[] = [], check?: any) {
     const deps = _deps.get(target)
+
+    if (!check) {
+        check = target
+    }
 
     if (!deps) {
         return true
@@ -40,12 +44,13 @@ export function valideDependencies(target: any, col: ServiceCollection, exists: 
             throw ReferenceError('No corresponding target found in collection')
         }
 
-        if (exists.includes(desc.ctor)) {
+        if (exists.includes(check)) {
+            exists = exists.map(c => c.name)
             throw new CircularDependencyError(exists)
         }
 
         exists.push(desc.ctor)
-        valideDependencies(desc.ctor, col, exists)
+        valideDependencies(desc.ctor, col, exists, check)
     }
 
     return true
