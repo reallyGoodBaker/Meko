@@ -1,4 +1,15 @@
 import * as https from 'https'
+import {createIdentifier} from '@di'
+
+
+interface IHttps {
+    request(method: 'POST'|'GET'|'DELETE', url: string, data: any, headers?: any): Promise<Res>
+    post(url: string, data?: any, headers?: any): Promise<Res>
+    get(url: string, data?: any): Promise<Res>
+    del(url: string, headers?: any): Promise<Res>
+}
+
+export const IHttps = createIdentifier<IHttps>('https-util')
 
 interface Res {
     json(): any;
@@ -66,15 +77,15 @@ function request(
     })
 }
 
-export async function post(url: string, data = {}, headers = {}) {
+async function post(url: string, data = {}, headers = {}) {
     return await request('POST', url, data, headers)
 }
 
-export async function del(url: string, headers = {}) {
+async function del(url: string, headers = {}) {
     return await request('DELETE', url, undefined, headers)
 }
 
-export function get(url: string, data: any): Promise<Res> {
+function get(url: string, data: any): Promise<Res> {
     const queryArray = []
     for (const k in data) {
         queryArray.push(`${k}=${data[k]}`)
@@ -106,4 +117,11 @@ export function get(url: string, data: any): Promise<Res> {
             }))
         }).end()
     })
+}
+
+export class Https {
+    request = request
+    post = post
+    del = del
+    get = get
 }

@@ -49,3 +49,10 @@ export class FileSystem implements IFileSystem {
     }
 
 }
+
+
+export interface IFileStream {
+    
+}
+
+export const IFileStream = createIdentifier<IFileStream>('builtin-FileStream')

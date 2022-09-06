@@ -1,19 +1,13 @@
-import {InstantiationService, ServiceCollection} from '@di'
-import {IConfigurator, MekoConfigurator} from '@persistence/configurator'
-import {IFileSystem, FileSystem} from '@persistence/fileSystem'
+import { InstantiationService } from '@di'
+import { instantiationServiceCollection } from '@src/initConfig'
+import { IConfigurator } from '@persistence/configurator'
 
-const instantiationService = new InstantiationService(
-    new ServiceCollection([
-        [IConfigurator, MekoConfigurator],
-        [IFileSystem, FileSystem],
-    ])
-)
-
+const instantiationService = new InstantiationService(instantiationServiceCollection)
 
 class App {
     constructor(
         @IConfigurator private readonly configurator: IConfigurator,
-    ) {}
+    ) { }
 
     async startApp() {
         const [config] = await Promise.all([
