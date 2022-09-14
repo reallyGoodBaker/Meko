@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc && node ./out/pathMap",
-    "start": "npm run build && node out/index"
+    "start": "npm run build && node out/index",
+    "dev": "nodemon -r tsconfig-paths/register ./src/index.ts"
   },
   "author": "",
   "license": "ISC",
@@ -13,6 +14,7 @@
     "oicq": "^2.2.3"
   },
   "devDependencies": {
-    "@types/node": "^18.0.0"
+    "@types/node": "^18.0.0",
+    "tsconfig-paths": "^4.1.0"
   }
 }
