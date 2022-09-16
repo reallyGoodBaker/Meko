@@ -16,6 +16,8 @@ export interface IFileSystem {
     readFile(filePath: string, removeComments?: boolean): Promise<any>
     appendFile(filePath: string, data: string | Uint8Array): Promise<void>
     watch(filePath: string, onchange: (type: string, filePath: string) => void): fs.FSWatcher
+    copyFolder(from: string, to: string): Promise<void>
+    rmFolder(folderPath: string): Promise<void>
 }
 
 export const IFileSystem = createIdentifier<IFileSystem>('builtin-fs')
@@ -46,6 +48,14 @@ export class FileSystem implements IFileSystem {
         }
 
         return JSON.parse(str)
+    }
+
+    async copyFolder(from: string, to: string) {
+        
+    }
+
+    async rmFolder(folderPath: string): Promise<void> {
+        
     }
 
 }
