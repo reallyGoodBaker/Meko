@@ -31,11 +31,11 @@
     "baseUrl": "./",                                  /* Specify the base directory to resolve non-relative module names. */
     "paths": {
         "@src/*": ["./src/*"],
-        "@persistence/*": ["./src/persistence/*"],
+        "@persistence/*": ["src/components/persistence/*"],
         "@di/*": ["./src/di/*"],
         "@di": ["./src/di/index"],
-        "@utils/*": ["./src/utils/*"],
-        "@network/*": ["./src/network/*"]
+        "@components/*": ["./src/components/*"],
+        "@network/*": ["src/components/network/*"]
     },                                      /* Specify a set of entries that re-map imports to additional lookup locations. */
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
     // "typeRoots": [],                                  /* Specify multiple folders that act like './node_modules/@types'. */
