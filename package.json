@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc && node ./out/pathMap",
     "start": "npm run build && node out/index",
-    "dev": "nodemon -r tsconfig-paths/register ./src/index.ts"
+    "dev": "nodemon -r tsconfig-paths/register ./src/index.ts",
+    "test": "npm run build && jest test.js"
   },
   "author": "",
   "license": "ISC",
@@ -14,7 +15,9 @@
     "oicq": "^2.2.3"
   },
   "devDependencies": {
+    "@types/jest": "^29.0.3",
     "@types/node": "^18.0.0",
+    "jest": "^29.0.3",
     "tsconfig-paths": "^4.1.0"
   }
 }

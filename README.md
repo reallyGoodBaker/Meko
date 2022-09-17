@@ -37,8 +37,8 @@ yarn dev
 ##### 组织结构图
 
 ```mermaid
-	graph TB
-	Meko(Meko)
+graph TB
+    Meko(Meko)
     Meko-->Netwrok-API(Netwrok-API)
     Meko-->DI(DI-基础类库)
     Meko-->persistence(persistence)

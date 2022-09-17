@@ -4,17 +4,17 @@ import {createIdentifier} from '@di'
 export interface ISave {
     add(key: string, val: Uint8Array): this;
     get(key: string): Uint8Array | null;
-    access(index: number): (string | number | Uint8Array)[] | (number | null)[];
+    access(index: number): [string, Uint8Array] | null;
     delete(key: string): this;
     writeBinary(filename: string): void;
-    parse(key: string, decorator: (buf: Uint8Array) => any): any;
-    string(key: string): string;
+    parse<T>(key: string, decorator: (buf: Uint8Array) => T): T | null;
+    string(key: string, encoding: BufferEncoding): string;
 }
 
 export const ISave = createIdentifier<ISave>('builtin-BinaryStore')
 
 export class Save implements ISave {
-    private _accessor: Array<string | number> = []
+    private _accessor: string[] = []
     private _data: Uint8Array[] = []
 
     add(key: string, val: Uint8Array) {
@@ -36,13 +36,13 @@ export class Save implements ISave {
         return null
     }
 
-    access(index: number) {
+    access(index: number): [string, Uint8Array] | null {
         const acc = this._accessor
         const data = this._data
-        const len = acc.length
+        const len = this._accessor.length
 
-        if (-index > -len && index < len) {
-
+        if (index > -len && index < len) {
+            
             if (index < 0) {
                 index = len + index
             }
@@ -53,7 +53,7 @@ export class Save implements ISave {
             ]
         }
 
-        return [-1, null]
+        return null
     }
 
     delete(key: string) {
@@ -117,7 +117,7 @@ export class Save implements ISave {
         return save
     }
 
-    parse(key: string, decorator: (buf: Uint8Array) => any) {
+    parse<T>(key: string, decorator: (buf: Uint8Array) => T) {
         const data = this.get(key)
         if (data) {
             return decorator.call(null, data)
@@ -125,10 +125,10 @@ export class Save implements ISave {
         return null
     }
 
-    string(key: string) {
+    string(key: string, encoding: BufferEncoding = 'utf-8') {
         return this.parse(key, buf => {
-            return Buffer.from(buf).toString()
-        })
+            return Buffer.from(buf).toString(encoding)
+        }) || ''
     }
 
 }
