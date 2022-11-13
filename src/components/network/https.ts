@@ -1,9 +1,10 @@
 import * as https from 'https'
-import {createIdentifier} from '@di'
+import { createIdentifier } from '@di'
+import { IncomingHttpHeaders } from 'http'
 
 
 interface IHttps {
-    request(method: 'POST'|'GET'|'DELETE', url: string, data: any, headers?: any): Promise<Res>
+    request(method: 'POST' | 'GET' | 'DELETE', url: string, data: any, headers?: any): Promise<Res>
     post(url: string, data?: any, headers?: any): Promise<Res>
     get(url: string, data?: any): Promise<Res>
     del(url: string, headers?: any): Promise<Res>
@@ -14,14 +15,16 @@ export const IHttps = createIdentifier<IHttps>('https-util')
 interface Res {
     json(): any;
     text(): string;
-    buffer(): Buffer
+    buffer(): Buffer;
+    readonly code: number;
+    readonly headers: IncomingHttpHeaders;
 }
 
 function request(
-    method: 'POST'|'GET'|'DELETE',
+    method: 'POST' | 'GET' | 'DELETE',
     url: string, data: any,
     headers = {}
-): Promise<Res|null> {
+): Promise<Res | null> {
     url = url.replace(/https?:\/\//, '')
 
     const hostEnd = url.indexOf('/')
@@ -49,28 +52,34 @@ function request(
             })
 
             res.on('end', () => {
-                if (/20[0-3]/.test(res.statusCode + '')) {
-                    resolve({
-                        json() {
-                            return JSON.parse(rawData.toString())
-                        },
-                        text() {
-                            return rawData.toString()
-                        },
-                        buffer() {
-                            return rawData
-                        }
-                    })
-                } else {
-                    resolve(null)
-                }
+
+                resolve({
+                    json() {
+                        return JSON.parse(rawData.toString())
+                    },
+                    text() {
+                        return rawData.toString()
+                    },
+                    buffer() {
+                        return rawData
+                    },
+                    code: res.statusCode!,
+                    headers: res.headers
+                })
+
             })
         })
 
         req.on('error', err => reject(err))
 
-        if (data !== void 0) {
-            req.write(JSON.stringify(data))
+        if (data) {
+            if (typeof data !== 'string') {
+                try {
+                    data = JSON.stringify(data)
+                } finally {
+                    req.write(data)
+                }
+            }
         }
 
         req.end()
@@ -99,11 +108,11 @@ function get(url: string, data: any): Promise<Res> {
     return new Promise(resolve => {
         https.get(url, res => {
             let rawData = Buffer.alloc(0)
-    
+
             res.on('data', c => {
                 rawData = Buffer.concat([rawData, c])
             })
-    
+
             res.on('end', () => resolve({
                 json() {
                     return JSON.parse(rawData.toString())
@@ -113,7 +122,9 @@ function get(url: string, data: any): Promise<Res> {
                 },
                 buffer() {
                     return rawData
-                }
+                },
+                code: res.statusCode!,
+                headers: res.headers
             }))
         }).end()
     })

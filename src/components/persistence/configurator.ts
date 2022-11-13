@@ -15,7 +15,7 @@ export class Configurator implements IConfigurator {
     constructor(
         @IFileSystem private readonly fileSystem: IFileSystem,
         private readonly _configPath: string,
-    ) { 
+    ) {
         this._init()
     }
 
@@ -63,11 +63,6 @@ class Config {
     }
 
     set(obj: any) {
-        this._data = obj
-        this._writeConfigWhenFree()
-    }
-
-    override(obj: any) {
         this._data = obj
         this._writeConfigWhenFree()
     }
