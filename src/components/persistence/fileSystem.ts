@@ -34,9 +34,13 @@ export class FileSystem implements IFileSystem {
     }
 
     async writeFile(filePath: string, data: Convertable) {
-        const str = JSON.stringify(data, null, 4)
 
-        await _writeFile(filePath, str)
+        if (typeof data === 'string') {
+            await _writeFile(filePath, data)
+            return
+        }
+
+        await _writeFile(filePath, JSON.stringify(data, null, 4))
     }
 
     async readFile(filePath: string, removeComments = true) {
