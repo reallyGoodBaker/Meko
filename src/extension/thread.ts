@@ -302,7 +302,7 @@ export class MainThread {
         return new Worker(filename, opt)
     }
 
-    async run(script: string, opt?: WorkerOptions) {
+    async run(script: StringLike, opt?: WorkerOptions) {
         const cachePath = path.resolve(__dirname, '../../cache')
         const filePath = path.join(cachePath, generateUid())
 
@@ -314,4 +314,8 @@ export class MainThread {
 
         return new Worker(filePath, opt)
     }
+}
+
+type StringLike = {
+    toString(): string
 }

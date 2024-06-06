@@ -27,7 +27,7 @@ class App {
         let a = 'Hello', a1 = 'World'
 
         const func = () => {
-            const {isMainThread} = require('worker_threads')
+            const { isMainThread } = require('worker_threads')
 
             /**@async*/ a
             /**@async*/ a1
@@ -40,7 +40,8 @@ class App {
         func()
 
         this.mainThread.run(
-            CrossThread({a, a1})(func)
+            CrossThread({a, a1})
+            (func)
         )
 
     }

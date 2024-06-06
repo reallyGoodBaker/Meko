@@ -20,8 +20,9 @@ export class Configurator implements IConfigurator {
     }
 
     private async _init() {
-        if (!this.fileSystem.exists(this._configPath))
-            this.fileSystem.mkdir(this._configPath)
+        if (!this.fileSystem.exists(this._configPath)) {
+            await this.fileSystem.mkdir(this._configPath)
+        }
     }
  
     async open(configName: string, removeComments=true) {
